@@ -1,0 +1,79 @@
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+*.so
+*.dylib
+*.out
+
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# ReSharper
+.idea/
+*.resharper
+*.resharper.user
+*.DotSettings.user
+
+# User-specific files
+*.suo
+*.localprefs
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Local environment files
+appsettings.Development.json
+appsettings.Local.json
+.env
+.env.local
+
+# Runtime
+*.runtimeconfig.json
+*.staticwebassets.runtime.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Node (if using npm/yarn for frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Rider
+.rider/
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Coverage reports
+coverage/
+*.coverage
+
+# Publish files
+PublishProfiles/
