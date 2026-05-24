@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore; // Assuming your ShortUrl model is in Domain
-using MyApi.Infrastructure.Entities; // Adjust the namespace if your ShortUrl model is in a different namespace   
+using Microsoft.EntityFrameworkCore;
+using MyApi.Infrastructure.Entities;
 
 namespace MyApi.Infrastructure.Persistence
 {
@@ -9,12 +9,12 @@ namespace MyApi.Infrastructure.Persistence
         {
         }
 
-        // This represents your table in Neon
+        // This represents table in Neon
         public DbSet<UrlMappingEntity> ShortUrlTable => Set<UrlMappingEntity>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Performance Tip: Ensure ShortCode is indexed for fast lookups
+            // Performance: Ensuring ShortCode is indexed for fast lookups
             modelBuilder
                 .Entity<UrlMappingEntity>()
                 .HasIndex(u => u.ShortUrl)

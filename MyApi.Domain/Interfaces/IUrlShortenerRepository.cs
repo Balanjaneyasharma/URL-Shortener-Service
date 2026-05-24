@@ -8,9 +8,9 @@ public interface IUrlShortenerRepository
 
     public Task<UrlMapping[]> GetAllShortUrls();
 
-    public Task<string> CreateShortUrl(string longUrl, string shortUrl);
+    public Task<string> CreateShortUrl(string longUrl, string shortUrl, string hashedLongUrl);
 
     public Task<bool> DeleteShortUrl(string shortUrl);
 
-    public Task<bool> IsUrlAlreadyShortened(string longUrl);
+     public Task<string?> GetShortUrlByHashedLongUrl(string hashedLongUrl);
 }

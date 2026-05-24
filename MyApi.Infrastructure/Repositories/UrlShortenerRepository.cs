@@ -43,7 +43,7 @@ public class UrlShortenerRepository : IUrlShortenerRepository
         return urlMappings.ToArray();
     }
 
-    public async Task<string> CreateShortUrl(string longUrl, string shortUrl)
+    public async Task<string> CreateShortUrl(string longUrl, string shortUrl, string hashedLongUrl)
     {
         try
         {
@@ -51,7 +51,8 @@ public class UrlShortenerRepository : IUrlShortenerRepository
                 new UrlMappingEntity 
                 { 
                     LongUrl = longUrl, 
-                    ShortUrl = shortUrl
+                    ShortUrl = shortUrl, 
+                    HashedLongUrl = hashedLongUrl
                 }
             );
             await this._dbContext.SaveChangesAsync();
@@ -81,9 +82,17 @@ public class UrlShortenerRepository : IUrlShortenerRepository
         return true;
     }
 
-    public async Task<bool> IsUrlAlreadyShortened(string longUrl)
+    public async Task<string?> GetShortUrlByHashedLongUrl(string hashedLongUrl)
     {
-        var entity = await this._dbContext.ShortUrlTable.FirstOrDefaultAsync(u => u.LongUrl == longUrl);
-        return entity != null;
+        var shortUrl = await this._dbContext.ShortUrlTable
+                        .Where(u => u.HashedLongUrl == hashedLongUrl)
+                        .Select(u => u.ShortUrl)
+                        .FirstOrDefaultAsync();
+        if (shortUrl is null)
+        {
+            return null;
+        }
+        return shortUrl;
     }
+    
 }

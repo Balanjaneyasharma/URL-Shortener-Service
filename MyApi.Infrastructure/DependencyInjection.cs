@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MyApi.Domain.Interfaces;
 using MyApi.Infrastructure.Repositories;
 using MyApi.Infrastructure.Persistence;
+using MyApi.Infrastructure.Generators;
 
 namespace MyApi.Infrastructure;
 
@@ -16,6 +17,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUrlShortenerRepository, UrlShortenerRepository>();
         services.AddScoped<IShortCodeGenerator, RandomShortCodeGenerator>();
+        services.AddScoped<IHashCodeGenerator, HashCodeGenerator>();
         
         return services;
     }
