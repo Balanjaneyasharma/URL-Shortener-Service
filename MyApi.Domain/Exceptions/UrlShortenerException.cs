@@ -31,13 +31,13 @@ public class UrlNotFoundException : UrlShortenerException
 /// Thrown when attempting to create a duplicate short URL
 /// Returns 409 Conflict
 /// </summary>
-public class UrlAlreadyExistsException : UrlShortenerException
+public class UrlAlreadyShortenedException : UrlShortenerException
 {
     public override int StatusCode => 409;
-    public override string UserMessage => "URL already shortened";
+    public override string UserMessage => "URL is already shortened";
 
-    public UrlAlreadyExistsException(string longUrl) 
-        : base($"The long URL '{longUrl}' already has a short URL assigned") { }
+    public UrlAlreadyShortenedException(string longUrl, string existingShortUrl) 
+        : base($"The long URL '{longUrl}' already has a short URL assigned: '{existingShortUrl}'") { }
 }
 
 /// <summary>

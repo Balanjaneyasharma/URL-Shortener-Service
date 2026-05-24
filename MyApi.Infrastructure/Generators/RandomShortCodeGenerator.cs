@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 
 using MyApi.Domain.Interfaces;
+namespace MyApi.Infrastructure.Generators;
 
 public class RandomShortCodeGenerator: IShortCodeGenerator
 {
