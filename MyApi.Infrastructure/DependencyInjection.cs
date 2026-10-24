@@ -12,13 +12,36 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-        services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+        return services
+            .AddDatabaseServices(connectionString)
+            .AddAuthenticationRepositories()
+            .AddDomainRepositories()
+            .AddCodeGenerators();
+    }
 
-        services.AddScoped<IUrlShortenerRepository, UrlShortenerRepository>();
-        services.AddScoped<IShortCodeGenerator, RandomShortCodeGenerator>();
-        services.AddScoped<IHashCodeGenerator, HashCodeGenerator>();
-        
-        return services;
+    private static IServiceCollection AddDatabaseServices(this IServiceCollection services, string connectionString)
+    {
+        return services
+            .AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString))
+            .AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+    }
+
+    private static IServiceCollection  AddAuthenticationRepositories(this IServiceCollection services)
+    {
+        return services
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+    }
+
+    private static IServiceCollection AddDomainRepositories(this IServiceCollection services)
+    {
+        return services.AddScoped<IUrlShortenerRepository, UrlShortenerRepository>();
+    }
+
+    private static IServiceCollection AddCodeGenerators(this IServiceCollection services)
+    {
+        return services
+            .AddScoped<IShortCodeGenerator, RandomShortCodeGenerator>()
+            .AddScoped<IHashCodeGenerator, HashCodeGenerator>();
     }
 }
