@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using MyApi.Domain.Models;
@@ -10,6 +11,7 @@ namespace MyApi.Controllers;
 
 [ApiController]
 [Route("api/url-short")]
+[Authorize]
 public class UrlShortenerController : ControllerBase
 {
     /* 
@@ -29,7 +31,9 @@ public class UrlShortenerController : ControllerBase
     [HttpPost("add")]
     public async Task<ActionResult<UrlMapping>> AddShortUrl([FromBody] UrlShortRequestDTO request)
     {
-        var shortUrl = await this._urlShortenerService.CreateShortUrl(request.LongUrl);
+        var shortUrl = await this._urlShortenerService.CreateShortUrl(
+            new CreateShortUrlRequest(request.LongUrl)
+        );
         return Created(shortUrl, shortUrl);
     }
 
@@ -41,6 +45,7 @@ public class UrlShortenerController : ControllerBase
     }
 
     [HttpGet("/{shortUrl}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetLongUrl([FromRoute] [ValidShortUrl] string shortUrl)
     {
         var longUrl = await this._urlShortenerService.GetLongUrlByShortUrl(shortUrl);

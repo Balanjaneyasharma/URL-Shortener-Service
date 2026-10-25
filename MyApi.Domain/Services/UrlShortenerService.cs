@@ -9,12 +9,18 @@ public class UrlShortenerService : IUrlShortenerService
     private readonly IUrlShortenerRepository _urlShortenerRepository;
     private readonly IShortCodeGenerator _shortCodeGenerator;
     private readonly IHashCodeGenerator _hashCodeGenerator;
+    private readonly ICurrentUserService _currentUserService;
 
-    public UrlShortenerService(IUrlShortenerRepository repository, IShortCodeGenerator shortCodeGenerator, IHashCodeGenerator hashCodeGenerator)
+    public UrlShortenerService(
+        IUrlShortenerRepository repository,
+        IShortCodeGenerator shortCodeGenerator,
+        IHashCodeGenerator hashCodeGenerator,
+        ICurrentUserService currentUserService)
     {
         _urlShortenerRepository = repository;
         _shortCodeGenerator = shortCodeGenerator;
         _hashCodeGenerator = hashCodeGenerator;
+        _currentUserService = currentUserService;
     }
 
     public async Task<string> GetLongUrlByShortUrl(string shortUrl)
@@ -24,17 +30,22 @@ public class UrlShortenerService : IUrlShortenerService
 
     public async Task<UrlMapping[]> GetAllShortUrls()
     {
-        return await _urlShortenerRepository.GetAllShortUrls();
+        return await _urlShortenerRepository.GetAllShortUrls(
+            new GetUserShortUrlsRequest(_currentUserService.UserId)
+        );
     }
 
-    public async Task<string> CreateShortUrl(string longUrl)
+    public async Task<string> CreateShortUrl(CreateShortUrlRequest request)
     {
-        var hashedLongUrl = _hashCodeGenerator.GenerateHash(longUrl);
-        var existingShortUrl = await _urlShortenerRepository.GetShortUrlByHashedLongUrl(hashedLongUrl);
+        var hashedLongUrl = _hashCodeGenerator.GenerateHash(request.LongUrl);
+        var userId = _currentUserService.UserId;
+        var existingShortUrl = await _urlShortenerRepository.GetShortUrlByHashedLongUrl(
+            new GetShortUrlByHashedLongUrlRequest(hashedLongUrl, userId)
+        );
 
         if (existingShortUrl is not null)
         {
-            throw new UrlAlreadyShortenedException(longUrl, existingShortUrl);
+            throw new UrlAlreadyShortenedException(request.LongUrl, existingShortUrl);
         }
 
         const int maxRetries = 3;
@@ -45,7 +56,9 @@ public class UrlShortenerService : IUrlShortenerService
 
             try
             {
-                return await _urlShortenerRepository.CreateShortUrl(longUrl, shortCode, hashedLongUrl);
+                return await _urlShortenerRepository.CreateShortUrl(
+                    new CreateUrlMappingRequest(request.LongUrl, shortCode, hashedLongUrl, userId)
+                );
             }
             catch (DuplicateShortCodeException)
             {
@@ -67,6 +80,8 @@ public class UrlShortenerService : IUrlShortenerService
 
     public async Task<bool> DeleteShortUrl(string shortUrl)
     {
-        return await _urlShortenerRepository.DeleteShortUrl(shortUrl);
+        return await _urlShortenerRepository.DeleteShortUrl(
+            new DeleteShortUrlRequest(shortUrl, _currentUserService.UserId)
+        );
     }
 }

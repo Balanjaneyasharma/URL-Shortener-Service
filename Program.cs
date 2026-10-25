@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using MyApi.Extensions;
 using MyApi.Middleware;
@@ -53,8 +54,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Add authorization
-builder.Services.AddAuthorization();
+// Require authentication for MVC endpoints unless an endpoint explicitly allows anonymous access.
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var app = builder.Build();
 
@@ -64,7 +70,7 @@ app.UseExceptionHandling();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
