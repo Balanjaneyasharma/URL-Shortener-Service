@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApi.Domain.Interfaces;
 using MyApi.Domain.Models;
@@ -9,6 +10,7 @@ using System.Security.Claims;
 
 namespace MyApi.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("auth")]
 public class AuthController : ControllerBase

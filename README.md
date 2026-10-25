@@ -95,6 +95,8 @@ https://localhost:5030/swagger
 ## 🔒 Security Notes
 
 - Database credentials are **never committed** to this repository
+- Creating, listing, or deleting short URLs requires an access token in the `Authorization: Bearer <token>` header
+- Short URL management operations are scoped to the authenticated user; redirecting a short URL remains public
 - Connection strings are managed via `appsettings.Development.json` (gitignored) or environment variables
 - For production deployments, set credentials as environment variables:
 
@@ -108,6 +110,7 @@ ConnectionStrings__DBConnection=your-production-connection-string
 
 - **Short code generation** — unique alphanumeric codes for each URL
 - **Redirect support** — clean HTTP redirect to the original URL
+- **User-owned links** — authenticated users can create, list, and delete only their own short URLs
 - **Input validation** — invalid URLs are rejected with meaningful error responses
 - **Global exception handling** — consistent error responses across all endpoints via custom middleware
 - **Swagger UI** — interactive API documentation in development mode

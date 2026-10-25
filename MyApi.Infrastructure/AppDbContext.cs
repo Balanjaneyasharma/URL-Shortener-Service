@@ -24,6 +24,12 @@ namespace MyApi.Infrastructure.Persistence
                 .HasIndex(u => u.ShortUrl)
                 .IsUnique();
 
+            modelBuilder.Entity<UrlMappingEntity>()
+                .HasOne(u => u.User)
+                .WithMany()
+                .HasForeignKey(u => u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<UserEntity>()
                 .HasIndex(u => u.Email)
                 .IsUnique();

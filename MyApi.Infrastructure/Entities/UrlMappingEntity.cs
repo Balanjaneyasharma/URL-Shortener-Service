@@ -1,4 +1,7 @@
+using System.ComponentModel.DataAnnotations.Schema;
 namespace MyApi.Infrastructure.Entities;
+
+[Table("ShortUrlTable")]
 public class UrlMappingEntity
 {
     public int Id { get; set; }
@@ -7,4 +10,6 @@ public class UrlMappingEntity
     public string? HashedLongUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public int UserId { get; set; }
+    public UserEntity User { get; set; } = null!;
 }

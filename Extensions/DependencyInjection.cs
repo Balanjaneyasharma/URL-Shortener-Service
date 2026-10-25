@@ -1,4 +1,5 @@
 
+using MyApi.Domain.Interfaces;
 using MyApi.Domain;
 using MyApi.Infrastructure;
 using MyApi.Services;
@@ -9,9 +10,17 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, string connectionString)
     {
-        services.AddScoped<IJwtService, JwtService>();
-        services.AddDomain();
-        services.AddInfrastructure(connectionString);
-        return services;
+        return services
+                .AddAuthServices()
+                .AddDomain()
+                .AddInfrastructure(connectionString);
+    }
+
+    private static IServiceCollection AddAuthServices(this IServiceCollection services)
+    {
+        return services
+            .AddHttpContextAccessor()
+            .AddScoped<ICurrentUserService, CurrentUserService>()
+            .AddScoped<IJwtService, JwtService>();
     }
 }

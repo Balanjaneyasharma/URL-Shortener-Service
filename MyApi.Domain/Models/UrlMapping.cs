@@ -7,4 +7,6 @@ public class UrlMapping
     public required string LongUrl { get; set; }
 
     public required string ShortUrl { get; set; }
+
+    public int UserId { get; set; }
 }

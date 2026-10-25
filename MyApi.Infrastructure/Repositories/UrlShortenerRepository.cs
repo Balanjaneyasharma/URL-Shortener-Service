@@ -35,28 +35,31 @@ public class UrlShortenerRepository : IUrlShortenerRepository
 
     }
 
-    public async Task<UrlMapping[]> GetAllShortUrls()
+    public async Task<UrlMapping[]> GetAllShortUrls(GetUserShortUrlsRequest request)
     {
-        var urlMappingEntities = await _dbContext.ShortUrlTable.ToListAsync();
+        var urlMappingEntities = await _dbContext.ShortUrlTable
+            .Where(u => u.UserId == request.UserId)
+            .ToListAsync();
         var urlMappings = urlMappingEntities.Select(e => e.ToDomain()).ToList();
 
         return urlMappings.ToArray();
     }
 
-    public async Task<string> CreateShortUrl(string longUrl, string shortUrl, string hashedLongUrl)
+    public async Task<string> CreateShortUrl(CreateUrlMappingRequest request)
     {
         try
         {
             this._dbContext.ShortUrlTable.Add(
-                new UrlMappingEntity 
-                { 
-                    LongUrl = longUrl, 
-                    ShortUrl = shortUrl, 
-                    HashedLongUrl = hashedLongUrl
+                new UrlMappingEntity
+                {
+                    LongUrl = request.LongUrl,
+                    ShortUrl = request.ShortUrl,
+                    HashedLongUrl = request.HashedLongUrl,
+                    UserId = request.UserId
                 }
             );
             await this._dbContext.SaveChangesAsync();
-            return shortUrl;  
+            return request.ShortUrl;
         }
         catch (DbUpdateException ex)
         {
@@ -67,7 +70,7 @@ public class UrlShortenerRepository : IUrlShortenerRepository
                 {
                     if (pgEx.ConstraintName == ShortUrlDbConstraints.DuplicateShortCode)
                     {
-                        throw new DuplicateShortCodeException(shortUrl);
+                        throw new DuplicateShortCodeException(request.ShortUrl);
                     }
                 }
             }
@@ -76,16 +79,24 @@ public class UrlShortenerRepository : IUrlShortenerRepository
         }
     }
 
-    public async Task<bool> DeleteShortUrl(string shortUrl)
+    public async Task<bool> DeleteShortUrl(DeleteShortUrlRequest request)
     {
-        await this._dbContext.ShortUrlTable.Where(u => u.ShortUrl == shortUrl).ExecuteDeleteAsync();
+        var deleted = await this._dbContext.ShortUrlTable
+            .Where(u => u.ShortUrl == request.ShortUrl && u.UserId == request.UserId)
+            .ExecuteDeleteAsync();
+
+        if (deleted == 0)
+        {
+            throw new UrlNotFoundException(request.ShortUrl);
+        }
+
         return true;
     }
 
-    public async Task<string?> GetShortUrlByHashedLongUrl(string hashedLongUrl)
+    public async Task<string?> GetShortUrlByHashedLongUrl(GetShortUrlByHashedLongUrlRequest request)
     {
         var shortUrl = await this._dbContext.ShortUrlTable
-                        .Where(u => u.HashedLongUrl == hashedLongUrl)
+                        .Where(u => u.HashedLongUrl == request.HashedLongUrl && u.UserId == request.UserId)
                         .Select(u => u.ShortUrl)
                         .FirstOrDefaultAsync();
         if (shortUrl is null)

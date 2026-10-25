@@ -6,11 +6,11 @@ public interface IUrlShortenerRepository
 {
     public Task<string> GetLongUrlByShortUrl(string shortUrl);
 
-    public Task<UrlMapping[]> GetAllShortUrls();
+    public Task<UrlMapping[]> GetAllShortUrls(GetUserShortUrlsRequest request);
 
-    public Task<string> CreateShortUrl(string longUrl, string shortUrl, string hashedLongUrl);
+    public Task<string> CreateShortUrl(CreateUrlMappingRequest request);
 
-    public Task<bool> DeleteShortUrl(string shortUrl);
+    public Task<bool> DeleteShortUrl(DeleteShortUrlRequest request);
 
-     public Task<string?> GetShortUrlByHashedLongUrl(string hashedLongUrl);
+    public Task<string?> GetShortUrlByHashedLongUrl(GetShortUrlByHashedLongUrlRequest request);
 }

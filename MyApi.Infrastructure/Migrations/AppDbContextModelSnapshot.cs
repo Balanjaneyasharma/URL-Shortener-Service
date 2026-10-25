@@ -17,7 +17,7 @@ namespace MyApi.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -81,12 +81,17 @@ namespace MyApi.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ShortUrl")
                         .IsUnique();
 
-                    b.ToTable("ShortUrlTable");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("short_links");
                 });
 
             modelBuilder.Entity("MyApi.Infrastructure.Entities.UserEntity", b =>
@@ -123,6 +128,17 @@ namespace MyApi.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("MyApi.Infrastructure.Entities.RefreshTokenEntity", b =>
+                {
+                    b.HasOne("MyApi.Infrastructure.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MyApi.Infrastructure.Entities.UrlMappingEntity", b =>
                 {
                     b.HasOne("MyApi.Infrastructure.Entities.UserEntity", "User")
                         .WithMany()

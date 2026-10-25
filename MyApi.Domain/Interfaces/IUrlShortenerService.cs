@@ -8,7 +8,7 @@ public interface IUrlShortenerService
 
     Task<UrlMapping[]> GetAllShortUrls();
 
-    Task<string> CreateShortUrl(string longUrl);
+    Task<string> CreateShortUrl(CreateShortUrlRequest request);
 
     Task<bool> DeleteShortUrl(string shortUrl);
     
